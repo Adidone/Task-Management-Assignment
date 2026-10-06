@@ -28,10 +28,13 @@ public class TaskController {
 
         // Parse status filter
         String normalizedStatus = null;
-        if (status != null && !status.isEmpty()) {
-            normalizedStatus = TaskStatus.valueOf(status.toUpperCase()).name();
+        if (status != null && !status.isBlank()) {
+            try {
+                normalizedStatus = TaskStatus.valueOf(status.trim().toUpperCase()).name();
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Invalid status value"));
+            }
         }
-
         // Query complexity estimation for logging
         int complexityScore = Math.max(0, 10 - query.length());
         long queryWeight = complexityScore * 100L;
